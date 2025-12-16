@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
 import plotly.express as px
 from scipy.stats import pearsonr, spearmanr, shapiro
 
@@ -134,3 +133,4 @@ Nilai koefisien korelasi sebesar **{corr:.3f}** dengan arah hubungan **{directio
 
 else:
     st.info(T["info"])
+
