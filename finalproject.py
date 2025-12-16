@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
+import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, spearmanr, shapiro
 
 # =====================
@@ -91,7 +91,7 @@ if uploaded_file:
     # Association Analysis
     # =====================
     col_x = st.selectbox(T["select_x"], numeric_cols)
-    col_y = st.selectbox(T["select_y"], numeric_cols, index=1)
+    col_y = st.selectbox(T["select_y"], numeric_cols, index=1 if len(numeric_cols) > 1 else 0)
 
     if st.button(T["analyze"]):
         data = df[[col_x, col_y]].dropna()
@@ -118,10 +118,23 @@ if uploaded_file:
         st.write(f"**{T['pval']}**: {pval:.4f}")
 
         # =====================
-        # Visualization
+        # Visualization (Matplotlib)
         # =====================
-        fig = px.scatter(df, x=col_x, y=col_y, title=f"{col_x} vs {col_y}")
-        st.plotly_chart(fig)
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.scatter(data[col_x], data[col_y], alpha=0.6, edgecolors='k', s=50)
+        ax.set_xlabel(col_x, fontsize=12)
+        ax.set_ylabel(col_y, fontsize=12)
+        ax.set_title(f"{col_x} vs {col_y}", fontsize=14, fontweight='bold')
+        ax.grid(True, alpha=0.3)
+        
+        # Add trend line
+        z = np.polyfit(data[col_x], data[col_y], 1)
+        p = np.poly1d(z)
+        ax.plot(data[col_x], p(data[col_x]), "r--", alpha=0.8, linewidth=2, label='Trend Line')
+        ax.legend()
+        
+        st.pyplot(fig)
+        
         # =====================
         # Description
         # =====================
@@ -133,5 +146,3 @@ Nilai koefisien korelasi sebesar **{corr:.3f}** dengan arah hubungan **{directio
 
 else:
     st.info(T["info"])
-
-
